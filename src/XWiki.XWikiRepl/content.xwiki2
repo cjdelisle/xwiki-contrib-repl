@@ -1,5 +1,7 @@
 {{velocity}}
 #if($request.getMethod() == 'POST')
-  $xwiki.parseGroovyFromPage('XWiki.XWikiReplCode').run($xcontext, $doc)##
+  #set ($k = $xwiki.parseGroovyFromPage('XWiki.XWikiReplCode'))
+  #set ($content = $request.get('content'))
+  $k.run($content, $services)##
 #end
 {{/velocity}}
