@@ -1,0 +1,5 @@
+{{velocity}}
+#if($request.getMethod() == 'POST')
+  $xwiki.parseGroovyFromPage('XWiki.XWikiReplCode').run($xcontext, $doc)##
+#end
+{{/velocity}}
