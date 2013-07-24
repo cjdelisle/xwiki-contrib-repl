@@ -51,6 +51,9 @@ pack.setExtensionId("org.xwiki.contrib:xwiki-clojure");
   var doc = new XWiki.model.XWikiDoc(["XWiki", "XWikiReplCode"]);
   doc.setContent(XWiki.Tools.contentFromFile(DIR+'content.groovy'));
   pack.addDocument(doc);
+  doc = new XWiki.model.XWikiDoc(["XWiki", "XWikiReplCode2"]);
+  doc.setContent(XWiki.Tools.contentFromFile(DIR+'content2.groovy'));
+  pack.addDocument(doc);
 })();
 
 //---------------------- Build the package ----------------------//
