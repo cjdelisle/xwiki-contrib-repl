@@ -1,10 +1,11 @@
+/* -*- mode: Java */
 import javax.script.ScriptEngineFactory;
 import org.xwiki.script.ScriptContextManager;
 import java.io.StringWriter;
 
 public String run(String content, Object services)
 {
-  def engineFactory = services.component.getInstance(ScriptEngineFactory.class, 'groovy');
+  def engineFactory = services.component.getInstance(ScriptEngineFactory.class, "groovy");
   def engine = engineFactory.getScriptEngine();
   def sContextManager = services.component.getInstance(ScriptContextManager.class);
   def sContext = sContextManager.getScriptContext();
@@ -20,7 +21,7 @@ public String run(String content, Object services)
   }
 
   if (out != null) {
-    sw.append('\n');
+    sw.append("\n");
     sw.append(out.toString());
   }
   return sw.toString();

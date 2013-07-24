@@ -1,38 +1,47 @@
 require.config({
   paths: {
-    ClojureRepl: ("$doc.getAttachmentURL('clojure-repl.js')").replace(/\.js$/, ''),
+    console: "$doc.getAttachmentURL('jqconsole')",
+    jquery_migrate: "$doc.getAttachmentURL('jquery.migrate')"
   }
 });
 
-require(['ClojureRepl', 'jquery'], function(undef, $) {
-  var console = $('<div></div>');
-  $('#xwikicontent').append(console);
-  console.console({
-    promptLabel: 'Demo> ',
-    commandValidate: function(line){
-      if (line === "") {
-        return false;
-      } else {
-        return true;
-      }
-    },
-    commandHandle: function(line, report) {
-      $.ajax({
-        method: 'POST',
-        url: "/xwiki/bin/view/XWiki/XWikiRepl?xpage=plain&outputSyntax=plain",
-        data: { content: line },
-        success: function(res) {
-          report([{msg:"=> "+res, className:"jquery-console-message-value"}]);
-        }
+require(['jquery'], function($) {
+  var open = function() {
+    require(['jquery_migrate'], function() {
+      require(['console'], function() {
+        var div = $('<div id="console" style="width:800px;height:400px"></div>');
+        $('#xwikicontent').append(div);
+        var jqconsole = div.jqconsole('Hi\n', '>>>');
+        var startPrompt = function () {
+          // Start the prompt with history enabled.
+          jqconsole.Prompt(true, function (input) {
+            $.ajax({
+              method: 'POST',
+              url: "/xwiki/bin/view/XWiki/XWikiRepl?xpage=plain&outputSyntax=plain",
+              data: { content: input },
+              success: function(res) {
+                jqconsole.Write(res + '\n', 'jqconsole-output');
+                startPrompt();
+              }
+            });
+          });
+        };
+        startPrompt();
       });
-    },
-    autofocus:true,
-    animateScroll:true,
-    promptHistory:true,
-    /*charInsertTrigger: function(keycode,line){
-      // Let you type until you press a-z
-      // Never allow zero.
-      return !line.match(/[a-z]+/) && keycode != '0'.charCodeAt(0);
-    }*/
+    });
+  };
+
+  $(function() {
+    var icon = '/xwiki/resources/icons/silk/application_osx_terminal.png';
+    var div = $('<div id="zzz" ' +
+                'class="topmenuentry hasIcon" ' +
+                'style="background-image: url(\''+icon+'\');" ' +
+                'title="Groovy Console">' +
+                '<a class="tme" href="#"></a>' +
+                '</div>');
+    $('#mainmenu .rightmenu').append(div);
+    $(div).on('click', function() {
+      open();
+    });
   });
 });

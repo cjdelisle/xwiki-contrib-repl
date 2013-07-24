@@ -1,5 +1,7 @@
 var XWiki = require('xwiki-tools');
 var Fs = require('fs');
+var rjs = require('requirejs');
+var StyleSheetExtension = rjs('classes/StyleSheetExtension.js');
 
 //---------------------- Create XWiki Package ----------------------//
 
@@ -27,15 +29,15 @@ pack.setExtensionId("org.xwiki.contrib:xwiki-clojure");
     doc.addAttachment(DIR+'attach/' + name);
   });
 
-  // Lets give our document an object!
   var obj = new XWiki.model.classes.JavaScriptExtension();
-
-  // The object class is described here:
-  // https://github.com/cjdelisle/xwiki-tools/blob/master/lib/model/classes/JavaScriptExtension.js
-  // As with the document, fir each field there are corrisponding setters and getters.
-  // The setters and getters can be chained so obj.setParse(true).setUse('always').setCache('long')
-  // is ok.
   obj.setCode(XWiki.Tools.contentFromFile(DIR+'jsx/code.js'));
+  obj.setParse(true);
+  obj.setUse('currentPage');
+  obj.setCache('forbid');
+  doc.addXObject(obj);
+
+  obj = new StyleSheetExtension();
+  obj.setCode(XWiki.Tools.contentFromFile(DIR+'ssx/code.css'));
   obj.setParse(true);
   obj.setUse('currentPage');
   obj.setCache('forbid');
