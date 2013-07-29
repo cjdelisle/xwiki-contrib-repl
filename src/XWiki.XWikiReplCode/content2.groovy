@@ -1,58 +1,76 @@
-{{groovy}}
+/* -*- mode: Java */
+import groovy.json.JsonOutput
 import javax.script.ScriptEngineFactory;
+import javax.script.ScriptEngineManager;
 import org.xwiki.script.ScriptContextManager;
 import java.io.StringWriter;
+import org.xwiki.rendering.macro.Macro;
+import org.xwiki.context.Execution;
 
-if(!request.getMethod().equalsIgnoreCase("POST")) {
-  println "This is XWiki REPL endpoint. POST to it to get things evaluated.";
-  return;
-}
-
-def language = request.getParameter("language");
-if(language == null) {
-  return "No language specified";
-}
-
-def expression = request.getInputStream().getText();
-if(expression == null) {
-  return "No expression to evaluate";
-}
-
-def session = request.getSession();
-
-def engine = session.getAttribute("ENGINE");
-def sContext = session.getAttribute("ENGINE_CONTEXT");
-if(engine == null) {
-  def engineFactory = services.component.getInstance(ScriptEngineFactory.class, language);
-  if(engineFactory == null) {
-    return "No factory for language " + language;
+Map getEngines(Object services) {
+  def gMacro = services.component.getInstance(Macro.class, "groovy");
+  def manager = gMacro.scriptEngineManager;
+  def out = new HashMap();
+  for (Object engine : manager.getEngineFactories()) {
+    for (Object name : engine.getNames()) {
+      out.put(name, engine);
+      break;
+    }
   }
-  engine = engineFactory.getScriptEngine();
-  def sContextManager = services.component.getInstance(ScriptContextManager.class);
-  sContext = sContextManager.getScriptContext();
-
-  println "Putting engine " + engine + "into session";
-
-  session.setAttribute("ENGINE", engine);
-  session.setAttribute("ENGINE_CONTEXT", sContext);
+  return out;
 }
 
-println "Using engine " + engine + ", context " + sContext;
-
-def sw = new StringWriter();
-def ow = sContext.getWriter();
-def out = null;
-try {
-  sContext.setWriter(sw);
-  out = engine.eval(expression, sContext); 
-} finally {
-  sContext.setWriter(ow);
+public String languages(Object services) {
+  def out = [];
+  out.addAll(getEngines(services).keySet())
+  return JsonOutput.toJson(out);
 }
 
-if (out != null) {
-  sw.append('\n');
-  sw.append(out.toString());
+public boolean userHasProgrammingRights(Object services) {
+  def exec = services.component.getInstance(Execution.class);
+  def ctx = exec.getContext().getProperty("xwikicontext");
+  return ctx.getWiki().getRightService().hasProgrammingRights(null, ctx);
 }
 
-println sw.toString();
-{{/groovy}}
+public String run(String expression, String language, Object session, Object services) {
+
+  if (!userHasProgrammingRights(services)) {
+    return "You don't have permission to run script";
+  }
+
+  def engineKey = "REPL_ENGINE_" + language;
+  def contextKey = "REPL_ENGINE_CONTEXT_" + language;
+
+  def engine = session.getAttribute(engineKey);
+  def sContext = session.getAttribute(contextKey);
+  if(engine == null) {
+    def engineFactory = getEngines(services).get(language);
+    if(engineFactory == null) {
+      return language + " scripting is not supported";
+    }
+    engine = engineFactory.getScriptEngine();
+    def sContextManager = services.component.getInstance(ScriptContextManager.class);
+    sContext = sContextManager.getScriptContext();
+
+    session.setAttribute(engineKey, engine);
+    session.setAttribute(contextKey, sContext);
+  }
+
+  def sw = new StringWriter();
+  def ow = sContext.getWriter();
+  def out = null;
+  try {
+    sContext.setWriter(sw);
+    out = engine.eval(expression, sContext); 
+  } finally {
+    sContext.setWriter(ow);
+  }
+
+  if (out != null) {
+    sw.append('\n');
+    sw.append(out.toString());
+  }
+
+  return sw.toString();
+
+}

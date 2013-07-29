@@ -6,11 +6,11 @@ var StyleSheetExtension = rjs('classes/StyleSheetExtension.js');
 //---------------------- Create XWiki Package ----------------------//
 
 var pack = new XWiki.Package();
-pack.setName("XWiki - Contrib - ClojureRepl");
-pack.setDescription("Live clojure codeing in XWiki");
+pack.setName("XWiki - Contrib - Repl");
+pack.setDescription("Live coding in XWiki");
 
 // This is needed to register with the extension manager repository
-pack.setExtensionId("org.xwiki.contrib:xwiki-clojure");
+pack.setExtensionId("org.xwiki.contrib:xwiki-contrib-repl");
 
 
 //---------------------- Add a Document ----------------------//
@@ -32,14 +32,14 @@ pack.setExtensionId("org.xwiki.contrib:xwiki-clojure");
   var obj = new XWiki.model.classes.JavaScriptExtension();
   obj.setCode(XWiki.Tools.contentFromFile(DIR+'jsx/code.js'));
   obj.setParse(true);
-  obj.setUse('currentPage');
+  obj.setUse('always');
   obj.setCache('forbid');
   doc.addXObject(obj);
 
   obj = new StyleSheetExtension();
   obj.setCode(XWiki.Tools.contentFromFile(DIR+'ssx/code.css'));
   obj.setParse(true);
-  obj.setUse('currentPage');
+  obj.setUse('always');
   obj.setCache('forbid');
   doc.addXObject(obj);
 
@@ -51,9 +51,6 @@ pack.setExtensionId("org.xwiki.contrib:xwiki-clojure");
 (function() {
   var DIR = 'src/XWiki.XWikiReplCode/';
   var doc = new XWiki.model.XWikiDoc(["XWiki", "XWikiReplCode"]);
-  doc.setContent(XWiki.Tools.contentFromFile(DIR+'content.groovy'));
-  pack.addDocument(doc);
-  doc = new XWiki.model.XWikiDoc(["XWiki", "XWikiReplCode2"]);
   doc.setContent(XWiki.Tools.contentFromFile(DIR+'content2.groovy'));
   pack.addDocument(doc);
 })();

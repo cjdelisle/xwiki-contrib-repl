@@ -2,6 +2,12 @@
 #if($request.getMethod() == 'POST')
   #set ($k = $xwiki.parseGroovyFromPage('XWiki.XWikiReplCode'))
   #set ($content = $request.get('content'))
-  $k.run($content, $services)##
+  $k.run($content, $request.get('lang'), $request.getSession(), $services)##
+#else
+  {{info}}This is an internal document used by the XWiki Console extension{{/info}}
+
+  The following languages are supported:
+  #set ($k = $xwiki.parseGroovyFromPage('XWiki.XWikiReplCode'))
+  $k.languages($services)
 #end
 {{/velocity}}
