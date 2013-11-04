@@ -7,3 +7,6 @@ To build (requires node.js):
     ./do
 
 The resulting .xar file will contain the application.
+
+For more information, see
+http://extensions.xwiki.org/xwiki/bin/view/Extension/REPL+Console+Application
