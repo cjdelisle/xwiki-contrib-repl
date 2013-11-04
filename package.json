@@ -1,0 +1,12 @@
+{
+    "name": "xwiki-contrib-repl",
+    "description": "XWiki REPL Console Application",
+    "version": "0.1.0",
+    "repository": {
+        "url": "https://github.com/xwiki-contrib/xwiki-contrib-repl.git",
+        "type": "git"
+    },
+    "dependencies": {
+        "xwiki-tools": "~0.3.3"
+    }
+}

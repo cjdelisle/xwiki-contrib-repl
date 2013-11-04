@@ -39,7 +39,7 @@ define(['jquery'], function($) {
       var div = $('<div id="console-button" ' +
                   'class="topmenuentry hasIcon dropdownmenuentry" ' +
                   'style="background-image: url(\''+icon+'\'); cursor:pointer" ' +
-                  'title="Groovy Console"' +
+                  'title="XWiki Console"' +
                   'onmouseover="showsubmenu(this);"' +
                   'onmouseout="hidesubmenu(this);"' +
                   '></div>');

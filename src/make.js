@@ -72,5 +72,5 @@ if ((i = process.argv.indexOf('--post')) > -1) {
 } else {
     // default:
     // Generate an xar file.
-    pack.genXar('XWikiToolsExample.xar');
+    pack.genXar('xwiki-contrib-repl.xar');
 }
